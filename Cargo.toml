@@ -6,3 +6,26 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# gst
+gst = { package = "gstreamer", git = "https://github.com/sdroege/gstreamer-rs", features = ["v1_20", "ser_de"] }
+gst-sdp = { package = "gstreamer-sdp", git = "https://github.com/sdroege/gstreamer-rs", features = ["v1_20"] }
+gst-video = { package = "gstreamer-video", git = "https://github.com/sdroege/gstreamer-rs", features = ["v1_20", "ser_de"] }
+gst-webrtc = { package = "gstreamer-webrtc", git = "https://github.com/sdroege/gstreamer-rs", features = ["v1_20"] }
+
+# error handling
+color-eyre = "0.6"
+eyre = "0.6"
+
+# logging
+env_logger = "0.9"
+log = "0.4"
+
+# tokio
+tokio = {version = "1.15", features = ["time", "rt-multi-thread", "macros", "signal", "net"]}
+
+# webrtcsink
+webrtcsink = { git = "https://github.com/praveenperera/webrtcsink.git", branch = "tokio1" }
+# webrtcsink = { git = "https://github.com/praveenperera/webrtcsink.git", branch = "tokio-new-runtime" }
+
+# utils
+once_cell = "1.0"
