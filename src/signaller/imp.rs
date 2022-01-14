@@ -2,6 +2,7 @@ use eyre::Result;
 use gst_webrtc::gst_sdp;
 use log::{debug, error};
 use tokio::task;
+use tokio::runtime;
 
 use gst::glib::prelude::*;
 use gst::glib::{self, WeakRef};
@@ -11,6 +12,14 @@ use gst::{gst_debug, gst_error, gst_info};
 use once_cell::sync::{Lazy, OnceCell};
 
 use webrtcsink::webrtcsink::WebRTCSink;
+
+static RUNTIME: Lazy<runtime::Runtime> = Lazy::new(|| {
+    runtime::Builder::new_multi_thread()
+        .enable_all()
+        .worker_threads(1)
+        .build()
+        .unwrap()
+});
 
 static CAT: Lazy<gst::DebugCategory> = Lazy::new(|| {
     gst::DebugCategory::new(
@@ -47,7 +56,7 @@ impl Signaller {
 
         ELEMENT.set(element).expect("element instance already set");
 
-        task::spawn(async move {
+        RUNTIME.spawn(async move {
             println!("start in tokio task");
         });
     }
@@ -62,7 +71,7 @@ impl Signaller {
         let sdp = sdp.sdp();
         let element = element.downgrade();
 
-        task::spawn(async move { println!("in tokio handle sdp") });
+        RUNTIME.spawn(async move { println!("in tokio handle sdp") });
     }
 
     /// Sends the servers ICE candidates to the client over WAMP
@@ -78,7 +87,7 @@ impl Signaller {
         let element = element.downgrade();
         let candidate = candidate.to_string();
 
-        task::spawn(async move { println!("in tokio handle_ice") });
+        RUNTIME.spawn(async move { println!("in tokio handle_ice") });
     }
 
     pub fn stop(&self, element: &WebRTCSink) {
